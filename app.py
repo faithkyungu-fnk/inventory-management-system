@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -39,6 +39,10 @@ def home():
 
 @app.route("/inventory", methods=["GET"])
 def get_inventory():
+    return jsonify(inventory)
+
+@app.route("/inventory/<int:item_id>", methods=["GET"])
+def get_inventory_item(item_id):
     for item in inventory:
         if item["id"] == item_id:
             return jsonify(item)
@@ -63,5 +67,39 @@ def add_inventory_item():
 
     return jsonify(new_item), 201
 
+@app.route("/inventory/<int:item_id>", methods=["PATCH"])
+def update_inventory_item(item_id):
+    data = request.get_json()
+
+    for item in inventory:
+        if item["id"] == item_id:
+
+            if "name" in data:
+                item["name"] = data["name"]
+
+            if "brand" in data:
+                item["brand"] = data["brand"]
+
+            if "price" in data:
+                item["price"] = data["price"]
+
+            if "stock" in data:
+                item["stock"] = data["stock"]
+
+            if "barcode" in data:
+                item["barcode"] = data["barcode"]
+
+            return jsonify(item)
+
+    return jsonify({"error": "Inventory item not found"}), 404
+
+@app.route("/inventory/<int:item_id>", methods=["DELETE"])
+def delete_inventory_item(item_id):
+    for item in inventory:
+        if item["id"] == item_id:
+            inventory.remove(item)
+            return jsonify({"message": "Inventory item deleted successfully"})
+
+    return jsonify({"error": "Inventory item not found"}), 404
 if __name__ == "__main__":
     app.run(debug=True)
