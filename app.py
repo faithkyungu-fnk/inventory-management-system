@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from openfoodfacts import get_product_by_barcode
 app = Flask(__name__)
 
@@ -34,7 +34,7 @@ inventory = [
 
 @app.route("/")
 def home():
-    return "Inventory Management System"
+    return render_template("index.html")
 
 
 @app.route("/inventory", methods=["GET"])
