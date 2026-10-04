@@ -3,11 +3,13 @@ BASE_URL= "http://127.0.0.1:5000"
 
 def get_inventory():
     response = requests.get(f"{BASE_URL}/inventory")
+    print(f"Status Code: {response.status_code}")
     print("\nInventory:")
     print(response.json())
 
 def get_inventory_item(item_id):
     response = requests.get(f"{BASE_URL}/inventory/{item_id}")
+    print(f"Status Code: {response.status_code}")
     print(f"\nInventory Item {item_id}:")
     print(response.json())    
 
@@ -25,6 +27,7 @@ def add_inventory_item():
         "barcode": barcode
     }
     response = requests.post(f"{BASE_URL}/inventory", json=item)
+    print(f"Status Code: {response.status_code}")
     print(f"\nAdded Inventory Item:")
     print(response.json())
 
@@ -35,17 +38,20 @@ def update_inventory_item(item_id):
     update_data = {"price": price, "stock": stock}
     response = requests.patch(f"{BASE_URL}/inventory/{item_id}", json=update_data
   )   
+    print(f"Status Code: {response.status_code}")
     print(f"\nUpdated Inventory Item {item_id}:")
     print(response.json())
 
 def delete_inventory_item(item_id):
     response = requests.delete(f"{BASE_URL}/inventory/{item_id}")
+    print(f"Status Code: {response.status_code}")
     print(f"\nDeleted Inventory Item {item_id}:")
     print(response.json())
 
 #   lets cli look up a product by barcode
 def get_product_from_openfoodfacts(barcode):
     response = requests.get(f"{BASE_URL}/products/{barcode}")
+    print(f"Status Code: {response.status_code}")
     print(f"\nOpenFoodFacts Product {barcode}:")
     print(response.json())
 
@@ -66,19 +72,28 @@ if __name__ == "__main__":
             get_inventory()
 
         elif choice == "2":
-            item_id = int(input("Enter inventory item ID: "))
-            get_inventory_item(item_id)
+            try:
+                item_id = int(input("Enter inventory item ID: "))
+                get_inventory_item(item_id)
+            except ValueError:
+                print("Invalid input. Please enter a valid choice.")
 
         elif choice == "3":
             add_inventory_item()
 
         elif choice == "4":
-            item_id = int(input("Enter inventory item ID: "))
-            update_inventory_item(item_id)
+            try:
+                item_id = int(input("Enter inventory item ID: "))
+                update_inventory_item(item_id)
+            except ValueError:
+                print("Invalid inventory item ID.")
 
         elif choice == "5":
-            item_id = int(input("Enter inventory item ID: "))
-            delete_inventory_item(item_id)
+            try:
+                item_id = int(input("Enter inventory item ID: "))
+                delete_inventory_item(item_id)
+            except ValueError:
+                print("Invalid inventory item ID.")
 
         elif choice == "6":
             barcode = input("Enter product barcode: ")
