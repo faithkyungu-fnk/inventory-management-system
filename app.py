@@ -52,6 +52,21 @@ def get_inventory_item(item_id):
 def add_inventory_item():
     data = request.get_json()
 
+    if not data:
+        return jsonify({"error": "Request body is required"}), 400
+
+    required_fields = ["name", "brand", "price", "stock", "barcode"]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"{field} is required"}), 400
+
+    if not isinstance(data["price"], (int, float)) or data["price"] < 0:
+        return jsonify({"error": "Price must be a non-negative number"}), 400
+
+    if not isinstance(data["stock"], int) or data["stock"] < 0:
+        return jsonify({"error": "Stock must be a non-negative integer"}), 400
+
     new_id = len(inventory) + 1
 
     new_item = {
@@ -70,6 +85,23 @@ def add_inventory_item():
 @app.route("/inventory/<int:item_id>", methods=["PATCH"])
 def update_inventory_item(item_id):
     data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Request body is required"}), 400
+
+    allowed_fields = ["name", "brand", "price", "stock", "barcode"]
+
+    for field in data:
+        if field not in allowed_fields:
+            return jsonify({"error": f"{field} is not a valid field"}), 400
+
+    if "price" in data:
+        if not isinstance(data["price"], (int, float)) or data["price"] < 0:
+            return jsonify({"error": "Price must be a non-negative number"}), 400
+
+    if "stock" in data:
+        if not isinstance(data["stock"], int) or data["stock"] < 0:
+            return jsonify({"error": "Stock must be a non-negative integer"}), 400
 
     for item in inventory:
         if item["id"] == item_id:
@@ -111,5 +143,6 @@ def get_product_from_openfoodfacts(barcode):
         return jsonify(product)
     else:
         return jsonify({"error": "Product not found"}), 404
+
 if __name__ == "__main__":
     app.run(debug=True)
