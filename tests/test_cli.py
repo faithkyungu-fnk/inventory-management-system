@@ -1,6 +1,5 @@
 import cli
 
-
 def test_get_inventory(monkeypatch):
     class MockResponse:
         status_code = 200
